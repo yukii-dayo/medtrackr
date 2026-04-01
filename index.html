@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MedTrackr - Your Health Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+    <!-- Floating Orbs Background -->
+    <div class="motion-container">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div class="orb orb-3"></div>
+        <div class="orb orb-4"></div>
+    </div>
+
+    <!-- Grid Pattern Overlay -->
+    <div class="grid-pattern"></div>
+
+    <!-- Floating Geometric Shapes -->
+    <div class="geo-shapes">
+        <div class="geo geo-1"></div>
+        <div class="geo geo-2"></div>
+        <div class="geo geo-3"></div>
+        <div class="geo geo-4"></div>
+        <div class="geo geo-5"></div>
+        <div class="geo geo-6"></div>
+    </div>
+
+    <!-- Theme Toggle -->
+    <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark mode">
+        <i class="fas fa-sun" id="themeIcon"></i>
+    </button>
+
+    <!-- Theme Transition Overlay -->
+    <div class="theme-transition" id="themeTransition"></div>
+
+    <!-- Navigation -->
+    <nav class="navbar" id="navbar">
+        <div class="nav-container">
+            <a href="#" class="nav-logo" onclick="showPage('home')">
+                <div class="logo-icon-container">
+                    <svg class="logo-svg" viewBox="0 0 50 50" xmlns="http://www.w3.org/2000/svg">
+                        <rect x="2" y="2" width="46" height="46" rx="12" ry="12" fill="url(#logoGradient)"/>
+                        <defs>
+                            <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#2ab5a5;stop-opacity:1" />
+                                <stop offset="100%" style="stop-color:#0d9488;stop-opacity:1" />
+                            </linearGradient>
+                            <clipPath id="iconClip">
+                                <rect x="2" y="2" width="46" height="46" rx="12" ry="12"/>
+                            </clipPath>
+                        </defs>
+                        <g clip-path="url(#iconClip)">
+                            <polyline class="heartrate-line" points="-46,25 -30,25 -22,25 -19,27 -16,22 -13,33 -8,8 -3,25 2,25 10,25 18,25 25,25 33,25 36,27 39,22 42,33 47,8 52,25 57,25 65,25 73,25 80,25 83,27 86,22 89,33 94,8 99,25 104,25 112,25" fill="none" stroke="white" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/>
+                        </g>
+                    </svg>
+                </div>
+                <span class="logo-text">Med<span class="logo-accent">Trackr</span></span>
+            </a>
+            <ul class="nav-links">
+                <li><a href="#" class="nav-link active" data-page="home" onclick="showPage('home')"><i class="fas fa-home"></i> Home</a></li>
+                <li><a href="#" class="nav-link" data-page="bmi" onclick="showPage('bmi')"><i class="fas fa-calculator"></i> BMI Calculator</a></li>
+                <li><a href="#" class="nav-link" data-page="dashboard" onclick="showPage('dashboard')"><i class="fas fa-chart-line"></i> Dashboard</a></li>
+                <li><a href="#" class="nav-link" data-page="diet" onclick="showPage('diet')"><i class="fas fa-utensils"></i> Diet Program</a></li>
+            </ul>
+            <button class="nav-hamburger" id="hamburger">
+                <span></span><span></span><span></span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Mobile Menu -->
+    <div class="mobile-menu" id="mobileMenu">
+        <a href="#" class="mobile-link" onclick="showPage('home'); closeMobileMenu()"><i class="fas fa-home"></i> Home</a>
+        <a href="#" class="mobile-link" onclick="showPage('bmi'); closeMobileMenu()"><i class="fas fa-calculator"></i> BMI Calculator</a>
+        <a href="#" class="mobile-link" onclick="showPage('dashboard'); closeMobileMenu()"><i class="fas fa-chart-line"></i> Dashboard</a>
+        <a href="#" class="mobile-link" onclick="showPage('diet'); closeMobileMenu()"><i class="fas fa-utensils"></i> Diet Program</a>
+    </div>
+
+    <!-- ==================== HOME PAGE ==================== -->
+    <section class="page active" id="page-home">
+        <div class="hero">
+            <div class="hero-particles" id="heroParticles"></div>
+            <!-- Animated gradient mesh behind hero -->
+            <div class="hero-mesh"></div>
+            <div class="hero-content">
+                <div class="hero-badge animate-in">
+                    <span class="badge-dot"></span>
+                    <span>Trusted by 15,000+ users</span>
+                </div>
+                <h1 class="hero-title animate-in delay-1">
+                    Your Health,<br>
+                    <span class="gradient-text">Perfectly Tracked</span>
+                </h1>
+                <p class="hero-subtitle animate-in delay-2">
+                    Calculate your BMI, get personalized diet plans, and achieve your fitness goals with our intelligent health dashboard.
+                </p>
+                <div class="hero-buttons animate-in delay-3">
+                    <button class="btn btn-primary btn-glow" onclick="showPage('bmi')">
+                        <i class="fas fa-calculator"></i> Calculate BMI
+                    </button>
+                    <button class="btn btn-outline" onclick="showPage('dashboard')">
+                        <i class="fas fa-chart-line"></i> View Dashboard
+                    </button>
+                </div>
+            </div>
+            <div class="hero-visual animate-in delay-4">
+                <div class="floating-card card-1">
+                    <i class="fas fa-heartbeat"></i>
+                    <span>BMI: 22.5</span>
+                </div>
+                <div class="floating-card card-2">
+                    <i class="fas fa-fire"></i>
+                    <span>2,100 kcal</span>
+                </div>
+                <div class="floating-card card-3">
+                    <i class="fas fa-dumbbell"></i>
+                    <span>Active</span>
+                </div>
+                <div class="hero-circle"></div>
+                <div class="hero-circle hero-circle-2"></div>
+                <div class="hero-circle hero-circle-3"></div>
+            </div>
+        </div>
+
+        <!-- Features Section -->
+        <div class="features-section">
+            <h2 class="section-title" data-animate>Why Med<span class="gradient-text">Trackr</span>?</h2>
+            <div class="features-grid">
+                <div class="feature-card" data-animate>
+                    <div class="feature-icon">
+                        <i class="fas fa-calculator"></i>
+                    </div>
+                    <h3>Smart BMI Calculator</h3>
+                    <p>Accurate BMI calculation with age, activity level, and body composition insights.</p>
+                </div>
+                <div class="feature-card" data-animate>
+                    <div class="feature-icon">
+                        <i class="fas fa-chart-pie"></i>
+                    </div>
+                    <h3>Visual Dashboard</h3>
+                    <p>Beautiful, interactive dashboard that displays your health metrics at a glance.</p>
+                </div>
+                <div class="feature-card" data-animate>
+                    <div class="feature-icon">
+                        <i class="fas fa-utensils"></i>
+                    </div>
+                    <h3>Custom Diet Plans</h3>
+                    <p>Personalized weight loss or gain programs with daily macros and calorie targets.</p>
+                </div>
+                <div class="feature-card" data-animate>
+                    <div class="feature-icon">
+                        <i class="fas fa-moon"></i>
+                    </div>
+                    <h3>Dark Mode</h3>
+                    <p>Easy on your eyes with a beautiful dark mode toggle and smooth transitions.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stats Section -->
+        <div class="stats-section">
+            <div class="stat-item" data-animate>
+                <div class="stat-icon"><i class="fas fa-users"></i></div>
+                <div class="stat-number" data-count="15000">0</div>
+                <div class="stat-label">Users Tracking</div>
+            </div>
+            <div class="stat-item" data-animate>
+                <div class="stat-icon"><i class="fas fa-calculator"></i></div>
+                <div class="stat-number" data-count="50000">0</div>
+                <div class="stat-label">BMI Calculated</div>
+            </div>
+            <div class="stat-item" data-animate>
+                <div class="stat-icon"><i class="fas fa-clipboard-list"></i></div>
+                <div class="stat-number" data-count="8500">0</div>
+                <div class="stat-label">Diet Plans Created</div>
+            </div>
+            <div class="stat-item" data-animate>
+                <div class="stat-icon"><i class="fas fa-star"></i></div>
+                <div class="stat-number" data-count="95">0</div>
+                <div class="stat-label">% Satisfaction</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== BMI CALCULATOR PAGE ==================== -->
+    <section class="page" id="page-bmi">
+        <div class="page-container">
+            <div class="page-header animate-in">
+                <h1 class="page-title">BMI <span class="gradient-text">Calculator</span></h1>
+                <p class="page-description">Enter your details below to calculate your Body Mass Index and get personalized health insights.</p>
+            </div>
+
+            <div class="bmi-calculator">
+                <div class="calc-form animate-in delay-1">
+                    <div class="form-section">
+                        <h3><i class="fas fa-user"></i> Personal Details</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="name">Full Name</label>
+                                <input type="text" id="name" placeholder="Enter your name" class="form-input">
+                            </div>
+                            <div class="form-group">
+                                <label for="age">Age</label>
+                                <input type="number" id="age" placeholder="Years" min="10" max="120" class="form-input">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Gender</label>
+                                <div class="gender-select">
+                                    <button class="gender-btn active" data-gender="male" onclick="selectGender('male')">
+                                        <i class="fas fa-mars"></i> Male
+                                    </button>
+                                    <button class="gender-btn" data-gender="female" onclick="selectGender('female')">
+                                        <i class="fas fa-venus"></i> Female
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <h3><i class="fas fa-ruler-vertical"></i> Body Measurements</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="height">Height (cm)</label>
+                                <input type="number" id="height" placeholder="e.g., 175" min="50" max="300" class="form-input">
+                                <div class="input-slider-container">
+                                    <input type="range" id="heightSlider" min="100" max="250" value="170" class="input-slider" oninput="syncSlider('height', this.value)">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="weight">Weight (kg)</label>
+                                <input type="number" id="weight" placeholder="e.g., 70" min="20" max="500" class="form-input">
+                                <div class="input-slider-container">
+                                    <input type="range" id="weightSlider" min="30" max="200" value="70" class="input-slider" oninput="syncSlider('weight', this.value)">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <h3><i class="fas fa-running"></i> Activity Level</h3>
+                        <div class="activity-grid">
+                            <div class="activity-card active" data-activity="sedentary" onclick="selectActivity('sedentary')">
+                                <div class="activity-icon"><i class="fas fa-couch"></i></div>
+                                <h4>Sedentary</h4>
+                                <p>Little or no exercise</p>
+                            </div>
+                            <div class="activity-card" data-activity="light" onclick="selectActivity('light')">
+                                <div class="activity-icon"><i class="fas fa-walking"></i></div>
+                                <h4>Lightly Active</h4>
+                                <p>Exercise 1-3 days/week</p>
+                            </div>
+                            <div class="activity-card" data-activity="moderate" onclick="selectActivity('moderate')">
+                                <div class="activity-icon"><i class="fas fa-biking"></i></div>
+                                <h4>Moderately Active</h4>
+                                <p>Exercise 3-5 days/week</p>
+                            </div>
+                            <div class="activity-card" data-activity="active" onclick="selectActivity('active')">
+                                <div class="activity-icon"><i class="fas fa-running"></i></div>
+                                <h4>Very Active</h4>
+                                <p>Exercise 6-7 days/week</p>
+                            </div>
+                            <div class="activity-card" data-activity="extreme" onclick="selectActivity('extreme')">
+                                <div class="activity-icon"><i class="fas fa-dumbbell"></i></div>
+                                <h4>Extra Active</h4>
+                                <p>Very hard exercise daily</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button class="btn btn-primary btn-glow btn-full" onclick="calculateBMI()">
+                        <i class="fas fa-calculator"></i> Calculate My BMI
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== DASHBOARD PAGE ==================== -->
+    <section class="page" id="page-dashboard">
+        <div class="page-container">
+            <div class="page-header animate-in">
+                <h1 class="page-title">Health <span class="gradient-text">Dashboard</span></h1>
+                <p class="page-description">Your comprehensive health metrics overview at a glance.</p>
+            </div>
+
+            <!-- No Data State -->
+            <div class="no-data" id="noDataState">
+                <div class="no-data-icon animate-in">
+                    <i class="fas fa-chart-bar"></i>
+                </div>
+                <h2 class="animate-in delay-1">No Data Yet</h2>
+                <p class="animate-in delay-2">Calculate your BMI first to see your personalized dashboard.</p>
+                <button class="btn btn-primary btn-glow animate-in delay-3" onclick="showPage('bmi')">
+                    <i class="fas fa-calculator"></i> Calculate BMI Now
+                </button>
+            </div>
+
+            <!-- Dashboard Content -->
+            <div class="dashboard-content" id="dashboardContent" style="display: none;">
+                <!-- Top Cards -->
+                <div class="dashboard-top-cards">
+                    <div class="dash-card animate-in" id="bmiCard">
+                        <div class="dash-card-header">
+                            <span class="dash-card-label">Your BMI</span>
+                            <span class="dash-card-badge" id="bmiCategoryBadge">Normal</span>
+                        </div>
+                        <div class="dash-card-value" id="bmiValue">--</div>
+                        <div class="bmi-gauge-container">
+                            <div class="bmi-gauge">
+                                <div class="bmi-gauge-fill" id="bmiGaugeFill"></div>
+                                <div class="bmi-gauge-pointer" id="bmiGaugePointer"></div>
+                            </div>
+                            <div class="bmi-gauge-labels">
+                                <span>Underweight</span>
+                                <span>Normal</span>
+                                <span>Overweight</span>
+                                <span>Obese</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="dash-card animate-in delay-1" id="calorieCard">
+                        <div class="dash-card-header">
+                            <span class="dash-card-label">Daily Calories</span>
+                            <i class="fas fa-fire dash-card-icon"></i>
+                        </div>
+                        <div class="dash-card-value" id="dailyCalories">--</div>
+                        <p class="dash-card-subtitle">Maintenance calories</p>
+                        <div class="calorie-ring-container">
+                            <svg class="calorie-ring" viewBox="0 0 120 120">
+                                <circle class="calorie-ring-bg" cx="60" cy="60" r="50"/>
+                                <circle class="calorie-ring-fill" cx="60" cy="60" r="50" id="calorieRing"/>
+                            </svg>
+                            <div class="calorie-ring-text">
+                                <span id="calorieRingText">kcal</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="dash-card animate-in delay-2" id="weightStatusCard">
+                        <div class="dash-card-header">
+                            <span class="dash-card-label">Weight Status</span>
+                            <i class="fas fa-weight dash-card-icon"></i>
+                        </div>
+                        <div class="dash-card-value" id="currentWeight">--</div>
+                        <p class="dash-card-subtitle">Current weight (kg)</p>
+                        <div class="weight-info">
+                            <div class="weight-info-row">
+                                <span>Ideal Weight Range:</span>
+                                <span id="idealWeight">--</span>
+                            </div>
+                            <div class="weight-info-row">
+                                <span>Difference:</span>
+                                <span id="weightDiff">--</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- User Info Row -->
+                <div class="user-info-bar animate-in delay-1">
+                    <div class="user-info-item">
+                        <i class="fas fa-user"></i>
+                        <span id="dashName">--</span>
+                    </div>
+                    <div class="user-info-item">
+                        <i class="fas fa-birthday-cake"></i>
+                        <span id="dashAge">-- years</span>
+                    </div>
+                    <div class="user-info-item">
+                        <i class="fas fa-ruler-vertical"></i>
+                        <span id="dashHeight">-- cm</span>
+                    </div>
+                    <div class="user-info-item">
+                        <i class="fas fa-running"></i>
+                        <span id="dashActivity">--</span>
+                    </div>
+                </div>
+
+                <!-- Macros Section -->
+                <div class="macros-section animate-in delay-2">
+                    <h2 class="section-title">Daily Macro Targets</h2>
+                    <div class="macros-grid">
+                        <div class="macro-card protein">
+                            <div class="macro-icon"><i class="fas fa-drumstick-bite"></i></div>
+                            <div class="macro-info">
+                                <h4>Protein</h4>
+                                <div class="macro-value" id="dashProtein">-- g</div>
+                            </div>
+                            <div class="macro-bar">
+                                <div class="macro-bar-fill" id="proteinBar" style="width: 0%"></div>
+                            </div>
+                        </div>
+                        <div class="macro-card carbs">
+                            <div class="macro-icon"><i class="fas fa-bread-slice"></i></div>
+                            <div class="macro-info">
+                                <h4>Carbs</h4>
+                                <div class="macro-value" id="dashCarbs">-- g</div>
+                            </div>
+                            <div class="macro-bar">
+                                <div class="macro-bar-fill" id="carbsBar" style="width: 0%"></div>
+                            </div>
+                        </div>
+                        <div class="macro-card fats">
+                            <div class="macro-icon"><i class="fas fa-cheese"></i></div>
+                            <div class="macro-info">
+                                <h4>Fats</h4>
+                                <div class="macro-value" id="dashFats">-- g</div>
+                            </div>
+                            <div class="macro-bar">
+                                <div class="macro-bar-fill" id="fatsBar" style="width: 0%"></div>
+                            </div>
+                        </div>
+                        <div class="macro-card fiber">
+                            <div class="macro-icon"><i class="fas fa-seedling"></i></div>
+                            <div class="macro-info">
+                                <h4>Fiber</h4>
+                                <div class="macro-value" id="dashFiber">-- g</div>
+                            </div>
+                            <div class="macro-bar">
+                                <div class="macro-bar-fill" id="fiberBar" style="width: 0%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CTA to Diet Program -->
+                <div class="dashboard-cta animate-in delay-3">
+                    <div class="cta-content">
+                        <h2>Ready to Start Your Journey?</h2>
+                        <p>Create a personalized diet program based on your BMI results.</p>
+                    </div>
+                    <button class="btn btn-primary btn-glow" onclick="showPage('diet')">
+                        <i class="fas fa-utensils"></i> Create Diet Program
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== DIET PROGRAM PAGE ==================== -->
+    <section class="page" id="page-diet">
+        <div class="page-container">
+            <div class="page-header animate-in">
+                <h1 class="page-title">Diet <span class="gradient-text">Program</span></h1>
+                <p class="page-description">Create a customized weight management program tailored to your goals.</p>
+            </div>
+
+            <!-- No BMI State -->
+            <div class="no-data" id="noBmiForDiet">
+                <div class="no-data-icon animate-in">
+                    <i class="fas fa-clipboard-list"></i>
+                </div>
+                <h2 class="animate-in delay-1">Calculate BMI First</h2>
+                <p class="animate-in delay-2">We need your BMI data to create a personalized diet program.</p>
+                <button class="btn btn-primary btn-glow animate-in delay-3" onclick="showPage('bmi')">
+                    <i class="fas fa-calculator"></i> Calculate BMI
+                </button>
+            </div>
+
+            <!-- Diet Setup -->
+            <div class="diet-setup" id="dietSetup" style="display: none;">
+                <div class="diet-goal-section animate-in delay-1">
+                    <h2 class="section-title">Choose Your Goal</h2>
+                    <div class="goal-cards">
+                        <div class="goal-card" data-goal="loss" onclick="selectGoal('loss')">
+                            <div class="goal-icon"><i class="fas fa-arrow-down"></i></div>
+                            <h3>Weight Loss</h3>
+                            <p>Lose weight safely with a calorie deficit plan</p>
+                            <div class="goal-tag">Recommended for BMI > 25</div>
+                        </div>
+                        <div class="goal-card" data-goal="maintain" onclick="selectGoal('maintain')">
+                            <div class="goal-icon"><i class="fas fa-equals"></i></div>
+                            <h3>Maintain Weight</h3>
+                            <p>Keep your current weight with balanced nutrition</p>
+                            <div class="goal-tag">Recommended for BMI 18.5-25</div>
+                        </div>
+                        <div class="goal-card" data-goal="gain" onclick="selectGoal('gain')">
+                            <div class="goal-icon"><i class="fas fa-arrow-up"></i></div>
+                            <h3>Weight Gain</h3>
+                            <p>Build mass with a calorie surplus plan</p>
+                            <div class="goal-tag">Recommended for BMI < 18.5</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="diet-duration-section animate-in delay-2" id="durationSection" style="display: none;">
+                    <h2 class="section-title">Program Duration</h2>
+                    <div class="duration-selector">
+                        <div class="duration-option active" data-months="3" onclick="selectDuration(3)">
+                            <span class="duration-number">3</span>
+                            <span class="duration-label">Months</span>
+                        </div>
+                        <div class="duration-option" data-months="4" onclick="selectDuration(4)">
+                            <span class="duration-number">4</span>
+                            <span class="duration-label">Months</span>
+                        </div>
+                        <div class="duration-option" data-months="6" onclick="selectDuration(6)">
+                            <span class="duration-number">6</span>
+                            <span class="duration-label">Months</span>
+                        </div>
+                        <div class="duration-option" data-months="9" onclick="selectDuration(9)">
+                            <span class="duration-number">9</span>
+                            <span class="duration-label">Months</span>
+                        </div>
+                        <div class="duration-option" data-months="12" onclick="selectDuration(12)">
+                            <span class="duration-number">12</span>
+                            <span class="duration-label">Months</span>
+                        </div>
+                    </div>
+
+                    <div class="target-weight-section" id="targetWeightSection">
+                        <div class="form-group">
+                            <label for="targetWeight">Target Weight (kg)</label>
+                            <input type="number" id="targetWeight" placeholder="Enter target weight" min="30" max="300" class="form-input">
+                        </div>
+                    </div>
+
+                    <button class="btn btn-primary btn-glow btn-full" onclick="generateDietPlan()">
+                        <i class="fas fa-magic"></i> Generate My Diet Plan
+                    </button>
+                </div>
+            </div>
+
+            <!-- Diet Plan Results -->
+            <div class="diet-results" id="dietResults" style="display: none;">
+                <div class="diet-summary animate-in">
+                    <div class="diet-summary-header">
+                        <h2><i class="fas fa-clipboard-check"></i> Your Personalized Diet Plan</h2>
+                        <button class="btn btn-outline btn-sm" onclick="resetDietPlan()">
+                            <i class="fas fa-redo"></i> Create New Plan
+                        </button>
+                    </div>
+                    <div class="diet-summary-cards">
+                        <div class="summary-card">
+                            <div class="summary-icon goal-icon-sm"><i class="fas fa-bullseye"></i></div>
+                            <div class="summary-info">
+                                <span class="summary-label">Goal</span>
+                                <span class="summary-value" id="dietGoalText">Weight Loss</span>
+                            </div>
+                        </div>
+                        <div class="summary-card">
+                            <div class="summary-icon"><i class="fas fa-calendar-alt"></i></div>
+                            <div class="summary-info">
+                                <span class="summary-label">Duration</span>
+                                <span class="summary-value" id="dietDurationText">3 Months</span>
+                            </div>
+                        </div>
+                        <div class="summary-card">
+                            <div class="summary-icon"><i class="fas fa-weight"></i></div>
+                            <div class="summary-info">
+                                <span class="summary-label">Current Weight</span>
+                                <span class="summary-value" id="dietCurrentWeight">-- kg</span>
+                            </div>
+                        </div>
+                        <div class="summary-card">
+                            <div class="summary-icon"><i class="fas fa-flag-checkered"></i></div>
+                            <div class="summary-info">
+                                <span class="summary-label">Target Weight</span>
+                                <span class="summary-value" id="dietTargetWeight">-- kg</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Daily Plan -->
+                <div class="daily-plan animate-in delay-1">
+                    <h2 class="section-title">Daily Nutrition Plan</h2>
+                    <div class="daily-plan-grid">
+                        <div class="daily-card calories-intake">
+                            <div class="daily-card-icon"><i class="fas fa-utensils"></i></div>
+                            <h3>Calorie Intake</h3>
+                            <div class="daily-card-value" id="planCalorieIntake">--</div>
+                            <p>kcal per day</p>
+                            <div class="daily-card-note" id="calorieNote">Maintenance - 500 kcal deficit</div>
+                        </div>
+                        <div class="daily-card calories-burn">
+                            <div class="daily-card-icon"><i class="fas fa-fire-alt"></i></div>
+                            <h3>Calories to Burn</h3>
+                            <div class="daily-card-value" id="planCalorieBurn">--</div>
+                            <p>kcal through exercise</p>
+                            <div class="daily-card-note">Recommended daily burn target</div>
+                        </div>
+                        <div class="daily-card maintenance">
+                            <div class="daily-card-icon"><i class="fas fa-balance-scale"></i></div>
+                            <h3>Maintenance Calories</h3>
+                            <div class="daily-card-value" id="planMaintenance">--</div>
+                            <p>kcal (TDEE)</p>
+                            <div class="daily-card-note">Your total daily energy expenditure</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Macros Plan -->
+                <div class="macros-plan animate-in delay-2">
+                    <h2 class="section-title">Daily Macronutrient Breakdown</h2>
+                    <div class="macros-plan-grid">
+                        <div class="macro-plan-card">
+                            <div class="macro-plan-ring">
+                                <svg viewBox="0 0 100 100">
+                                    <circle class="macro-ring-bg" cx="50" cy="50" r="42"/>
+                                    <circle class="macro-ring-fill protein-ring" cx="50" cy="50" r="42" id="planProteinRing"/>
+                                </svg>
+                                <div class="macro-ring-text" id="planProteinPercent">30%</div>
+                            </div>
+                            <h4>Protein</h4>
+                            <div class="macro-plan-value" id="planProtein">-- g</div>
+                            <p class="macro-plan-desc">Builds and repairs muscle tissue</p>
+                        </div>
+                        <div class="macro-plan-card">
+                            <div class="macro-plan-ring">
+                                <svg viewBox="0 0 100 100">
+                                    <circle class="macro-ring-bg" cx="50" cy="50" r="42"/>
+                                    <circle class="macro-ring-fill carbs-ring" cx="50" cy="50" r="42" id="planCarbsRing"/>
+                                </svg>
+                                <div class="macro-ring-text" id="planCarbsPercent">45%</div>
+                            </div>
+                            <h4>Carbohydrates</h4>
+                            <div class="macro-plan-value" id="planCarbs">-- g</div>
+                            <p class="macro-plan-desc">Primary energy source for your body</p>
+                        </div>
+                        <div class="macro-plan-card">
+                            <div class="macro-plan-ring">
+                                <svg viewBox="0 0 100 100">
+                                    <circle class="macro-ring-bg" cx="50" cy="50" r="42"/>
+                                    <circle class="macro-ring-fill fats-ring" cx="50" cy="50" r="42" id="planFatsRing"/>
+                                </svg>
+                                <div class="macro-ring-text" id="planFatsPercent">25%</div>
+                            </div>
+                            <h4>Fats</h4>
+                            <div class="macro-plan-value" id="planFats">-- g</div>
+                            <p class="macro-plan-desc">Essential for hormones and absorption</p>
+                        </div>
+                        <div class="macro-plan-card">
+                            <div class="macro-plan-ring">
+                                <svg viewBox="0 0 100 100">
+                                    <circle class="macro-ring-bg" cx="50" cy="50" r="42"/>
+                                    <circle class="macro-ring-fill fiber-ring" cx="50" cy="50" r="42" id="planFiberRing"/>
+                                </svg>
+                                <div class="macro-ring-text" id="planFiberGrams">--g</div>
+                            </div>
+                            <h4>Fiber</h4>
+                            <div class="macro-plan-value" id="planFiber">-- g</div>
+                            <p class="macro-plan-desc">Aids digestion and keeps you full</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Weekly Overview -->
+                <div class="weekly-overview animate-in delay-3">
+                    <h2 class="section-title">Weekly Weight Projection</h2>
+                    <div class="projection-chart" id="projectionChart">
+                        <!-- Generated by JS -->
+                    </div>
+                    <div class="weekly-tip">
+                        <i class="fas fa-lightbulb"></i>
+                        <p id="weeklyTip">Stick to your daily targets consistently for the best results. Small, sustainable changes lead to lasting transformations!</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-wave">
+            <svg viewBox="0 0 1440 100" preserveAspectRatio="none">
+                <path d="M0,40 C360,100 1080,0 1440,60 L1440,100 L0,100 Z" fill="currentColor"/>
+            </svg>
+        </div>
+        <div class="footer-content">
+            <div class="footer-logo">
+                <div class="logo-icon-container">
+                    <svg class="logo-svg" viewBox="0 0 50 50" xmlns="http://www.w3.org/2000/svg">
+                        <rect x="2" y="2" width="46" height="46" rx="12" ry="12" fill="url(#footerLogoGradient)"/>
+                        <defs>
+                            <linearGradient id="footerLogoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#2ab5a5;stop-opacity:1" />
+                                <stop offset="100%" style="stop-color:#0d9488;stop-opacity:1" />
+                            </linearGradient>
+                            <clipPath id="footerIconClip">
+                                <rect x="2" y="2" width="46" height="46" rx="12" ry="12"/>
+                            </clipPath>
+                        </defs>
+                        <g clip-path="url(#footerIconClip)">
+                            <polyline class="heartrate-line" points="-46,25 -30,25 -22,25 -19,27 -16,22 -13,33 -8,8 -3,25 2,25 10,25 18,25 25,25 33,25 36,27 39,22 42,33 47,8 52,25 57,25 65,25 73,25 80,25 83,27 86,22 89,33 94,8 99,25 104,25 112,25" fill="none" stroke="white" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/>
+                        </g>
+                    </svg>
+                </div>
+                <span>Med<span class="logo-accent">Trackr</span></span>
+            </div>
+            <p class="footer-text">Your health, perfectly tracked. Built with care.</p>
+            <div class="footer-links">
+                <a href="#" onclick="showPage('home')">Home</a>
+                <a href="#" onclick="showPage('bmi')">BMI Calculator</a>
+                <a href="#" onclick="showPage('dashboard')">Dashboard</a>
+                <a href="#" onclick="showPage('diet')">Diet Program</a>
+            </div>
+            <p class="footer-copy">&copy; 2026 MedTrackr. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast">
+        <i class="fas fa-check-circle"></i>
+        <span id="toastMessage">Success!</span>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
