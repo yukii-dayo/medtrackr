@@ -137,6 +137,9 @@ function showPage(pageName) {
     if (pageName === 'diet') {
         updateDietPage();
     }
+    if (pageName === 'workout') {
+        updateWorkoutPage();
+    }
 
     closeMobileMenu();
 }
@@ -785,6 +788,758 @@ function resetDietPlan() {
     document.getElementById('durationSection').style.display = 'none';
 }
 
+// ==================== WORKOUT PLAN ====================
+let workoutData = {
+    currentWeek: 1,
+    currentDay: 0, // 0=Mon, 1=Tue, ... 6=Sun
+    totalWeeks: 0,
+    completedDays: {} // key: "week-day", value: true
+};
+
+// Exercise image base URL from musclewiki/exercise illustration CDNs
+const EXERCISE_IMAGES = {
+    // Back exercises
+    'Barbell Bent-Over Row': 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Barbell-Bent-Over-Row.gif',
+    'Lat Pulldown': 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Lat-Pulldown.gif',
+    'Seated Cable Row': 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Seated-Cable-Row.gif',
+    'T-Bar Row': 'https://fitnessprogramer.com/wp-content/uploads/2021/02/T-Bar-Row.gif',
+    'Single-Arm Dumbbell Row': 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Dumbbell-Row.gif',
+    'Deadlift': 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Barbell-Deadlift.gif',
+    // Bicep exercises
+    'Barbell Curl': 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Barbell-Curl.gif',
+    'Dumbbell Hammer Curl': 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Hammer-Curl.gif',
+    'Incline Dumbbell Curl': 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Incline-Dumbbell-Curl.gif',
+    'Preacher Curl': 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Barbell-Preacher-Curl.gif',
+    'Concentration Curl': 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Concentration-Curl.gif',
+    'Cable Curl': 'https://fitnessprogramer.com/wp-content/uploads/2021/06/Cable-Curl.gif',
+    // Chest exercises
+    'Barbell Bench Press': 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Barbell-Bench-Press.gif',
+    'Incline Dumbbell Press': 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Incline-Dumbbell-Press.gif',
+    'Cable Fly': 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Cable-Crossover.gif',
+    'Dumbbell Fly': 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Dumbbell-Fly.gif',
+    'Push-Up': 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Push-Up.gif',
+    'Decline Bench Press': 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Decline-Barbell-Bench-Press.gif',
+    'Chest Dip': 'https://fitnessprogramer.com/wp-content/uploads/2021/06/Chest-Dips.gif',
+    // Tricep exercises
+    'Tricep Pushdown': 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Pushdown.gif',
+    'Overhead Tricep Extension': 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Dumbbell-Triceps-Extension.gif',
+    'Close-Grip Bench Press': 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Close-Grip-Barbell-Bench-Press.gif',
+    'Skull Crushers': 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Skull-Crusher.gif',
+    'Tricep Kickback': 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Dumbbell-Kickback.gif',
+    'Diamond Push-Up': 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Diamond-Push-up.gif',
+    // Leg exercises
+    'Barbell Squat': 'https://fitnessprogramer.com/wp-content/uploads/2021/02/BARBELL-SQUAT.gif',
+    'Leg Press': 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Leg-Press.gif',
+    'Romanian Deadlift': 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Barbell-Romanian-Deadlift.gif',
+    'Leg Extension': 'https://fitnessprogramer.com/wp-content/uploads/2021/02/LEG-EXTENSION.gif',
+    'Leg Curl': 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Leg-Curl.gif',
+    'Calf Raise': 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Standing-Calf-Raise.gif',
+    'Walking Lunge': 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Dumbbell-Lunges.gif',
+    'Bulgarian Split Squat': 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Dumbbell-Bulgarian-Split-Squat.gif',
+    'Hack Squat': 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Hack-Squat.gif',
+    // Abs exercises
+    'Crunches': 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Crunch.gif',
+    'Hanging Leg Raise': 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Hanging-Leg-Raise.gif',
+    'Russian Twist': 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Russian-Twist.gif',
+    'Plank': 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Front-Plank.gif',
+    'Cable Woodchop': 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Cable-Wood-Chop.gif',
+    'Ab Wheel Rollout': 'https://fitnessprogramer.com/wp-content/uploads/2021/06/Ab-Wheel-Rollout.gif',
+    // Shoulder exercises
+    'Overhead Press': 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Barbell-Overhead-Press.gif',
+    'Lateral Raise': 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Dumbbell-Lateral-Raise.gif',
+    'Face Pull': 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Face-Pull.gif',
+    'Arnold Press': 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Arnold-Press.gif',
+    'Front Raise': 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Dumbbell-Front-Raise.gif',
+    'Reverse Fly': 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Dumbbell-Rear-Delt-Fly.gif',
+    'Upright Row': 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Barbell-Upright-Row.gif',
+    // Cardio exercises
+    'Treadmill Running': 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Run.gif',
+    'Stationary Bike': 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Stationary-Bike.gif',
+    'Rowing Machine': 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Rowing-Machine.gif',
+    'Jump Rope': 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Jump-Rope.gif',
+    'Elliptical Trainer': 'https://fitnessprogramer.com/wp-content/uploads/2022/02/Elliptical-Machine.gif',
+    'Stair Climber': 'https://fitnessprogramer.com/wp-content/uploads/2022/02/Stair-Climber.gif',
+    'Battle Ropes': 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Battle-Rope.gif',
+    'Burpees': 'https://fitnessprogramer.com/wp-content/uploads/2021/02/Burpee.gif'
+};
+
+// Weekly workout split definition
+const WEEKLY_SPLIT = [
+    { // Monday - Back/Bicep
+        day: 'Monday',
+        type: 'Back / Bicep',
+        isRest: false,
+        exercises: [
+            {
+                name: 'Barbell Bent-Over Row',
+                muscle: 'Back',
+                equipment: 'Barbell',
+                sets: 4, reps: '8-10', rest: '90s',
+                instructions: [
+                    'Stand with feet shoulder-width apart, bend at the hips keeping your back straight.',
+                    'Grip the barbell with an overhand grip slightly wider than shoulder-width.',
+                    'Pull the bar towards your lower chest, squeezing your shoulder blades together.',
+                    'Slowly lower the bar back to the starting position with control.'
+                ]
+            },
+            {
+                name: 'Lat Pulldown',
+                muscle: 'Back',
+                equipment: 'Cable',
+                sets: 4, reps: '10-12', rest: '60s',
+                instructions: [
+                    'Sit at the lat pulldown machine with thighs secured under the pads.',
+                    'Grip the bar wider than shoulder-width with palms facing away.',
+                    'Pull the bar down to your upper chest while leaning slightly back.',
+                    'Slowly return the bar to the starting position, fully extending your arms.'
+                ]
+            },
+            {
+                name: 'Seated Cable Row',
+                muscle: 'Back',
+                equipment: 'Cable',
+                sets: 3, reps: '10-12', rest: '60s',
+                instructions: [
+                    'Sit at the cable row station with feet on the platform, knees slightly bent.',
+                    'Grab the handle and sit upright with arms extended.',
+                    'Pull the handle towards your midsection, squeezing your back muscles.',
+                    'Slowly extend your arms back to the starting position.'
+                ]
+            },
+            {
+                name: 'Single-Arm Dumbbell Row',
+                muscle: 'Back',
+                equipment: 'Dumbbell',
+                sets: 3, reps: '10-12 each', rest: '60s',
+                instructions: [
+                    'Place one knee and hand on a bench, keeping your back flat.',
+                    'Hold a dumbbell in the other hand with arm fully extended.',
+                    'Pull the dumbbell up to your hip, keeping elbow close to your body.',
+                    'Lower the weight with control and repeat on each side.'
+                ]
+            },
+            {
+                name: 'Barbell Curl',
+                muscle: 'Biceps',
+                equipment: 'Barbell',
+                sets: 3, reps: '10-12', rest: '60s',
+                instructions: [
+                    'Stand with feet shoulder-width apart, holding a barbell with an underhand grip.',
+                    'Keep your elbows pinned to your sides throughout the movement.',
+                    'Curl the barbell up towards your shoulders, squeezing at the top.',
+                    'Slowly lower the bar back down with control.'
+                ]
+            },
+            {
+                name: 'Dumbbell Hammer Curl',
+                muscle: 'Biceps',
+                equipment: 'Dumbbell',
+                sets: 3, reps: '12-15', rest: '45s',
+                instructions: [
+                    'Stand holding dumbbells at your sides with palms facing each other.',
+                    'Curl both dumbbells up simultaneously, keeping the neutral grip.',
+                    'Squeeze at the top of the movement.',
+                    'Lower slowly back to the starting position.'
+                ]
+            },
+            {
+                name: 'Incline Dumbbell Curl',
+                muscle: 'Biceps',
+                equipment: 'Dumbbell',
+                sets: 3, reps: '10-12', rest: '45s',
+                instructions: [
+                    'Sit on an incline bench set to about 45 degrees, arms hanging down.',
+                    'Hold dumbbells with palms facing forward.',
+                    'Curl the weights up, keeping upper arms stationary against the bench.',
+                    'Lower with control for a full stretch at the bottom.'
+                ]
+            }
+        ]
+    },
+    { // Tuesday - Chest/Tricep
+        day: 'Tuesday',
+        type: 'Chest / Tricep',
+        isRest: false,
+        exercises: [
+            {
+                name: 'Barbell Bench Press',
+                muscle: 'Chest',
+                equipment: 'Barbell',
+                sets: 4, reps: '8-10', rest: '90s',
+                instructions: [
+                    'Lie flat on the bench with feet firmly on the floor.',
+                    'Grip the barbell slightly wider than shoulder-width.',
+                    'Lower the bar to your mid-chest with control.',
+                    'Press the bar back up to the starting position, locking out your arms.'
+                ]
+            },
+            {
+                name: 'Incline Dumbbell Press',
+                muscle: 'Chest',
+                equipment: 'Dumbbell',
+                sets: 4, reps: '10-12', rest: '60s',
+                instructions: [
+                    'Set the bench to a 30-45 degree incline.',
+                    'Hold dumbbells at shoulder level with palms facing forward.',
+                    'Press the dumbbells up and slightly inward.',
+                    'Lower the weights slowly to shoulder level.'
+                ]
+            },
+            {
+                name: 'Cable Fly',
+                muscle: 'Chest',
+                equipment: 'Cable',
+                sets: 3, reps: '12-15', rest: '45s',
+                instructions: [
+                    'Stand between cable machines with handles set at shoulder height.',
+                    'Step forward slightly and keep a slight bend in your elbows.',
+                    'Bring both handles together in front of your chest in an arc motion.',
+                    'Slowly return to the starting position, feeling the stretch in your chest.'
+                ]
+            },
+            {
+                name: 'Chest Dip',
+                muscle: 'Chest',
+                equipment: 'Body Weight',
+                sets: 3, reps: '8-12', rest: '60s',
+                instructions: [
+                    'Grip the dip bars and lift yourself up with arms extended.',
+                    'Lean forward slightly to target the chest.',
+                    'Lower your body by bending your elbows until you feel a stretch in your chest.',
+                    'Push yourself back up to the starting position.'
+                ]
+            },
+            {
+                name: 'Tricep Pushdown',
+                muscle: 'Triceps',
+                equipment: 'Cable',
+                sets: 3, reps: '12-15', rest: '45s',
+                instructions: [
+                    'Stand at a cable machine with a straight or V-bar attachment.',
+                    'Grip the bar with palms facing down, elbows at your sides.',
+                    'Push the bar down until your arms are fully extended.',
+                    'Slowly return to the starting position without moving your elbows.'
+                ]
+            },
+            {
+                name: 'Overhead Tricep Extension',
+                muscle: 'Triceps',
+                equipment: 'Dumbbell',
+                sets: 3, reps: '10-12', rest: '45s',
+                instructions: [
+                    'Hold a dumbbell with both hands behind your head.',
+                    'Keep your upper arms close to your ears.',
+                    'Extend your arms upward until the dumbbell is overhead.',
+                    'Lower the weight back behind your head with control.'
+                ]
+            },
+            {
+                name: 'Skull Crushers',
+                muscle: 'Triceps',
+                equipment: 'EZ Bar',
+                sets: 3, reps: '10-12', rest: '60s',
+                instructions: [
+                    'Lie on a flat bench holding an EZ bar with arms extended above your chest.',
+                    'Bend your elbows to lower the bar towards your forehead.',
+                    'Keep your upper arms stationary throughout the movement.',
+                    'Extend your arms back to the starting position.'
+                ]
+            }
+        ]
+    },
+    { // Wednesday - Rest
+        day: 'Wednesday',
+        type: 'Rest Day',
+        isRest: true,
+        exercises: []
+    },
+    { // Thursday - Legs
+        day: 'Thursday',
+        type: 'Legs',
+        isRest: false,
+        exercises: [
+            {
+                name: 'Barbell Squat',
+                muscle: 'Quadriceps',
+                equipment: 'Barbell',
+                sets: 4, reps: '8-10', rest: '120s',
+                instructions: [
+                    'Position the barbell on your upper back, standing with feet shoulder-width apart.',
+                    'Brace your core and begin lowering by bending knees and hips.',
+                    'Descend until thighs are parallel to the floor or slightly below.',
+                    'Drive through your heels to stand back up to the starting position.'
+                ]
+            },
+            {
+                name: 'Leg Press',
+                muscle: 'Quadriceps',
+                equipment: 'Machine',
+                sets: 4, reps: '10-12', rest: '90s',
+                instructions: [
+                    'Sit in the leg press machine with feet shoulder-width apart on the platform.',
+                    'Release the safety handles and lower the platform by bending your knees.',
+                    'Lower until knees are at 90 degrees.',
+                    'Press the platform back up without locking your knees.'
+                ]
+            },
+            {
+                name: 'Romanian Deadlift',
+                muscle: 'Hamstrings',
+                equipment: 'Barbell',
+                sets: 3, reps: '10-12', rest: '90s',
+                instructions: [
+                    'Stand holding a barbell in front of your thighs with a shoulder-width grip.',
+                    'Hinge at the hips, pushing them back while keeping legs nearly straight.',
+                    'Lower the bar along your legs until you feel a stretch in your hamstrings.',
+                    'Squeeze your glutes and hamstrings to return to standing.'
+                ]
+            },
+            {
+                name: 'Leg Extension',
+                muscle: 'Quadriceps',
+                equipment: 'Machine',
+                sets: 3, reps: '12-15', rest: '45s',
+                instructions: [
+                    'Sit on the leg extension machine with your back against the pad.',
+                    'Hook your feet under the roller pad at ankle level.',
+                    'Extend your legs out in front of you, squeezing your quads at the top.',
+                    'Slowly lower the weight back to the starting position.'
+                ]
+            },
+            {
+                name: 'Leg Curl',
+                muscle: 'Hamstrings',
+                equipment: 'Machine',
+                sets: 3, reps: '12-15', rest: '45s',
+                instructions: [
+                    'Lie face down on the leg curl machine.',
+                    'Position the pad just above your heels.',
+                    'Curl your legs up towards your glutes, squeezing at the top.',
+                    'Lower the weight slowly back to the starting position.'
+                ]
+            },
+            {
+                name: 'Walking Lunge',
+                muscle: 'Glutes',
+                equipment: 'Dumbbell',
+                sets: 3, reps: '12 each leg', rest: '60s',
+                instructions: [
+                    'Hold dumbbells at your sides, standing tall.',
+                    'Step forward with one leg and lower your back knee towards the floor.',
+                    'Push off your front foot to bring your back leg forward into the next lunge.',
+                    'Continue alternating legs as you walk forward.'
+                ]
+            },
+            {
+                name: 'Calf Raise',
+                muscle: 'Calves',
+                equipment: 'Machine',
+                sets: 4, reps: '15-20', rest: '45s',
+                instructions: [
+                    'Stand on the calf raise machine with the balls of your feet on the edge.',
+                    'Lower your heels below the platform for a full stretch.',
+                    'Push up onto your toes as high as possible, squeezing your calves.',
+                    'Lower slowly back to the starting position.'
+                ]
+            }
+        ]
+    },
+    { // Friday - Abs/Shoulder
+        day: 'Friday',
+        type: 'Abs / Shoulder',
+        isRest: false,
+        exercises: [
+            {
+                name: 'Overhead Press',
+                muscle: 'Shoulders',
+                equipment: 'Barbell',
+                sets: 4, reps: '8-10', rest: '90s',
+                instructions: [
+                    'Stand with feet shoulder-width apart, holding a barbell at shoulder level.',
+                    'Brace your core and press the bar directly overhead.',
+                    'Lock out your arms at the top.',
+                    'Lower the bar slowly back to shoulder level.'
+                ]
+            },
+            {
+                name: 'Lateral Raise',
+                muscle: 'Shoulders',
+                equipment: 'Dumbbell',
+                sets: 4, reps: '12-15', rest: '45s',
+                instructions: [
+                    'Stand holding dumbbells at your sides with a slight bend in your elbows.',
+                    'Raise both arms out to the sides until they reach shoulder height.',
+                    'Keep a slight bend in elbows and avoid swinging.',
+                    'Lower the weights slowly back to your sides.'
+                ]
+            },
+            {
+                name: 'Face Pull',
+                muscle: 'Rear Delts',
+                equipment: 'Cable',
+                sets: 3, reps: '15-20', rest: '45s',
+                instructions: [
+                    'Set a cable pulley to upper chest height with a rope attachment.',
+                    'Grab the rope with both hands, palms facing each other.',
+                    'Pull the rope towards your face, separating your hands at the end.',
+                    'Squeeze your rear delts and slowly return to the starting position.'
+                ]
+            },
+            {
+                name: 'Front Raise',
+                muscle: 'Shoulders',
+                equipment: 'Dumbbell',
+                sets: 3, reps: '12-15', rest: '45s',
+                instructions: [
+                    'Stand holding dumbbells in front of your thighs with palms facing your body.',
+                    'Raise one or both arms straight in front of you to shoulder height.',
+                    'Keep a slight bend in the elbows throughout.',
+                    'Lower slowly back to the starting position.'
+                ]
+            },
+            {
+                name: 'Hanging Leg Raise',
+                muscle: 'Abs',
+                equipment: 'Body Weight',
+                sets: 3, reps: '12-15', rest: '45s',
+                instructions: [
+                    'Hang from a pull-up bar with arms fully extended.',
+                    'Keep your legs straight and raise them up in front of you.',
+                    'Lift until your legs are parallel to the floor or higher.',
+                    'Lower your legs slowly with control, avoiding swinging.'
+                ]
+            },
+            {
+                name: 'Russian Twist',
+                muscle: 'Obliques',
+                equipment: 'Body Weight',
+                sets: 3, reps: '20 total', rest: '45s',
+                instructions: [
+                    'Sit on the floor with knees bent, leaning back slightly.',
+                    'Hold a weight plate or medicine ball at your chest.',
+                    'Rotate your torso to one side, then the other, touching the weight to the floor.',
+                    'Keep your core engaged and feet slightly off the ground for added difficulty.'
+                ]
+            },
+            {
+                name: 'Plank',
+                muscle: 'Core',
+                equipment: 'Body Weight',
+                sets: 3, reps: '45-60s hold', rest: '30s',
+                instructions: [
+                    'Get into a forearm plank position with elbows under shoulders.',
+                    'Keep your body in a straight line from head to heels.',
+                    'Engage your core, glutes, and quads.',
+                    'Hold the position for the prescribed time without letting your hips sag.'
+                ]
+            }
+        ]
+    },
+    { // Saturday - Cardio
+        day: 'Saturday',
+        type: 'Cardio',
+        isRest: false,
+        exercises: [
+            {
+                name: 'Treadmill Running',
+                muscle: 'Cardio',
+                equipment: 'Treadmill',
+                sets: 1, reps: '20-30 min', rest: 'N/A',
+                instructions: [
+                    'Start with a 5-minute warm-up walk at a moderate pace.',
+                    'Increase to your target running speed.',
+                    'Maintain a steady pace or alternate with intervals of higher intensity.',
+                    'Cool down with a 5-minute walk at the end.'
+                ]
+            },
+            {
+                name: 'Rowing Machine',
+                muscle: 'Full Body',
+                equipment: 'Rowing Machine',
+                sets: 1, reps: '15-20 min', rest: 'N/A',
+                instructions: [
+                    'Sit on the rowing machine with feet strapped in securely.',
+                    'Grab the handle with both hands, arms extended.',
+                    'Drive with your legs first, then lean back and pull the handle to your chest.',
+                    'Return by extending arms, leaning forward, then bending knees.'
+                ]
+            },
+            {
+                name: 'Jump Rope',
+                muscle: 'Cardio',
+                equipment: 'Jump Rope',
+                sets: 3, reps: '3-5 min', rest: '60s',
+                instructions: [
+                    'Hold the rope handles at hip height with elbows close to your body.',
+                    'Swing the rope overhead and jump with both feet together.',
+                    'Stay on the balls of your feet and keep jumps small.',
+                    'Maintain a steady rhythm and breathing pattern.'
+                ]
+            },
+            {
+                name: 'Stationary Bike',
+                muscle: 'Cardio',
+                equipment: 'Stationary Bike',
+                sets: 1, reps: '20-30 min', rest: 'N/A',
+                instructions: [
+                    'Adjust the seat height so your leg is slightly bent at the bottom of the pedal stroke.',
+                    'Start with a light resistance warm-up for 5 minutes.',
+                    'Increase resistance and maintain a cadence of 70-90 RPM.',
+                    'Cool down with low resistance for the last 5 minutes.'
+                ]
+            },
+            {
+                name: 'Burpees',
+                muscle: 'Full Body',
+                equipment: 'Body Weight',
+                sets: 3, reps: '10-15', rest: '60s',
+                instructions: [
+                    'Start standing, then drop into a squat position with hands on the floor.',
+                    'Kick your feet back into a push-up position.',
+                    'Perform a push-up, then jump your feet back to your hands.',
+                    'Explosively jump up with arms overhead.'
+                ]
+            },
+            {
+                name: 'Battle Ropes',
+                muscle: 'Full Body',
+                equipment: 'Battle Ropes',
+                sets: 3, reps: '30-45s', rest: '45s',
+                instructions: [
+                    'Stand with feet shoulder-width apart, holding one end of the rope in each hand.',
+                    'Bend slightly at the knees and hinge at the hips.',
+                    'Alternate raising and lowering each arm rapidly to create waves in the rope.',
+                    'Keep your core engaged and maintain intensity throughout the interval.'
+                ]
+            }
+        ]
+    },
+    { // Sunday - Rest
+        day: 'Sunday',
+        type: 'Rest Day',
+        isRest: true,
+        exercises: []
+    }
+];
+
+function updateWorkoutPage() {
+    const savedDiet = localStorage.getItem('medtrackr-dietData');
+    const savedUser = localStorage.getItem('medtrackr-userData');
+
+    if (savedDiet) Object.assign(dietData, JSON.parse(savedDiet));
+    if (savedUser) Object.assign(userData, JSON.parse(savedUser));
+
+    const noData = document.getElementById('noWorkoutData');
+    const content = document.getElementById('workoutContent');
+
+    if (!dietData.dailyCalories || dietData.dailyCalories === 0) {
+        noData.style.display = 'block';
+        content.style.display = 'none';
+        return;
+    }
+
+    noData.style.display = 'none';
+    content.style.display = 'block';
+
+    // Load saved workout data
+    const savedWorkout = localStorage.getItem('medtrackr-workoutData');
+    if (savedWorkout) {
+        Object.assign(workoutData, JSON.parse(savedWorkout));
+    }
+
+    // Calculate total weeks from diet duration
+    workoutData.totalWeeks = Math.ceil((dietData.duration * 30) / 7);
+
+    renderWorkoutProgress();
+    renderWorkoutDayTabs();
+    renderWorkoutDayContent();
+}
+
+function renderWorkoutProgress() {
+    const totalDays = workoutData.totalWeeks * 7;
+    const completedCount = Object.keys(workoutData.completedDays).length;
+    const percent = Math.round((completedCount / totalDays) * 100);
+
+    // Calculate current day number
+    const currentDayNumber = (workoutData.currentWeek - 1) * 7 + workoutData.currentDay + 1;
+
+    document.getElementById('workoutCurrentDay').textContent = Math.min(currentDayNumber, totalDays);
+    document.getElementById('workoutTotalDays').textContent = totalDays;
+    document.getElementById('workoutCompletedDays').textContent = completedCount;
+    document.getElementById('workoutWeekTitle').textContent = 'Week ' + workoutData.currentWeek;
+
+    setTimeout(() => {
+        document.getElementById('workoutProgressFill').style.width = percent + '%';
+        document.getElementById('workoutProgressPercent').textContent = percent + '%';
+    }, 300);
+
+    // Update week nav buttons
+    document.getElementById('prevWeekBtn').disabled = workoutData.currentWeek <= 1;
+    document.getElementById('nextWeekBtn').disabled = workoutData.currentWeek >= workoutData.totalWeeks;
+}
+
+function changeWorkoutWeek(delta) {
+    const newWeek = workoutData.currentWeek + delta;
+    if (newWeek < 1 || newWeek > workoutData.totalWeeks) return;
+    workoutData.currentWeek = newWeek;
+    workoutData.currentDay = 0;
+    saveWorkoutData();
+    renderWorkoutProgress();
+    renderWorkoutDayTabs();
+    renderWorkoutDayContent();
+}
+
+function renderWorkoutDayTabs() {
+    const container = document.getElementById('workoutDayTabs');
+    container.innerHTML = '';
+
+    const dayNames = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+
+    for (let i = 0; i < 7; i++) {
+        const split = WEEKLY_SPLIT[i];
+        const key = workoutData.currentWeek + '-' + i;
+        const isCompleted = workoutData.completedDays[key];
+
+        const tab = document.createElement('div');
+        tab.className = 'workout-day-tab';
+        if (i === workoutData.currentDay) tab.classList.add('active');
+        if (split.isRest) tab.classList.add('rest-day');
+        if (isCompleted) tab.classList.add('completed');
+
+        tab.innerHTML = '<span class="workout-day-tab-name">' + dayNames[i] + '</span>' +
+            '<span class="workout-day-tab-type">' + split.type + '</span>';
+
+        tab.addEventListener('click', function() {
+            workoutData.currentDay = i;
+            saveWorkoutData();
+            renderWorkoutDayTabs();
+            renderWorkoutDayContent();
+        });
+
+        container.appendChild(tab);
+    }
+}
+
+function renderWorkoutDayContent() {
+    const container = document.getElementById('workoutDayContent');
+    const split = WEEKLY_SPLIT[workoutData.currentDay];
+    const dayKey = workoutData.currentWeek + '-' + workoutData.currentDay;
+    const isCompleted = workoutData.completedDays[dayKey];
+
+    if (split.isRest) {
+        container.innerHTML =
+            '<div class="workout-rest-day">' +
+                '<div class="rest-icon"><i class="fas fa-bed"></i></div>' +
+                '<h3>' + split.day + ' — Rest Day</h3>' +
+                '<p>Recovery is essential for muscle growth. Stay hydrated, stretch, and get plenty of sleep. Light walking or yoga is encouraged.</p>' +
+                (isCompleted ? '' :
+                    '<button class="btn btn-primary btn-sm" style="margin-top:1.5rem;" onclick="markDayComplete()">' +
+                        '<i class="fas fa-check"></i> Mark as Complete' +
+                    '</button>') +
+                (isCompleted ?
+                    '<div style="margin-top:1.5rem;color:var(--success);font-weight:700;"><i class="fas fa-check-circle"></i> Completed</div>' : '') +
+            '</div>';
+        return;
+    }
+
+    let html =
+        '<div class="workout-day-header">' +
+            '<div class="workout-day-header-info">' +
+                '<h3>' + split.day + ' — ' + split.type + '</h3>' +
+                '<p>' + split.exercises.length + ' exercises</p>' +
+            '</div>' +
+            '<button class="workout-day-complete-btn ' + (isCompleted ? 'completed' : '') + '" onclick="markDayComplete()">' +
+                '<i class="fas fa-' + (isCompleted ? 'check-circle' : 'check') + '"></i> ' +
+                (isCompleted ? 'Completed' : 'Mark Complete') +
+            '</button>' +
+        '</div>';
+
+    html += '<div class="workout-exercises-list">';
+
+    split.exercises.forEach(function(exercise, idx) {
+        const imgUrl = EXERCISE_IMAGES[exercise.name] || '';
+        const thumbUrl = imgUrl;
+
+        html +=
+            '<div class="workout-exercise-card" id="exercise-' + workoutData.currentDay + '-' + idx + '">' +
+                '<div class="workout-exercise-header" onclick="toggleExercise(' + workoutData.currentDay + ',' + idx + ')">' +
+                    '<div class="workout-exercise-thumb">' +
+                        (thumbUrl ? '<img src="' + thumbUrl + '" alt="' + exercise.name + '" loading="lazy">' :
+                            '<i class="fas fa-dumbbell" style="font-size:1.3rem;color:var(--primary);"></i>') +
+                    '</div>' +
+                    '<div class="workout-exercise-info">' +
+                        '<div class="workout-exercise-name">' + exercise.name + '</div>' +
+                        '<div class="workout-exercise-tags">' +
+                            '<span class="workout-exercise-tag muscle">' + exercise.muscle + '</span>' +
+                            '<span class="workout-exercise-tag equipment">' + exercise.equipment + '</span>' +
+                        '</div>' +
+                    '</div>' +
+                    '<button class="workout-exercise-toggle"><i class="fas fa-plus"></i></button>' +
+                '</div>' +
+                '<div class="workout-exercise-details">' +
+                    '<div class="workout-exercise-details-inner">' +
+                        '<div class="workout-exercise-image">' +
+                            (imgUrl ? '<img src="' + imgUrl + '" alt="' + exercise.name + '" loading="lazy">' :
+                                '<i class="fas fa-image" style="font-size:3rem;color:var(--text-muted);"></i>') +
+                        '</div>' +
+                        '<div class="workout-exercise-desc">' +
+                            '<h4>' + exercise.name + '</h4>' +
+                            '<div class="workout-exercise-sets">' +
+                                '<div class="workout-set-info"><span>Sets</span><span>' + exercise.sets + '</span></div>' +
+                                '<div class="workout-set-info"><span>Reps</span><span>' + exercise.reps + '</span></div>' +
+                                '<div class="workout-set-info"><span>Rest</span><span>' + exercise.rest + '</span></div>' +
+                            '</div>' +
+                            '<div class="workout-exercise-instructions">' +
+                                '<h5>How to Perform</h5>' +
+                                '<ol>' + exercise.instructions.map(function(step) { return '<li>' + step + '</li>'; }).join('') + '</ol>' +
+                            '</div>' +
+                        '</div>' +
+                    '</div>' +
+                '</div>' +
+            '</div>';
+    });
+
+    html += '</div>';
+    container.innerHTML = html;
+}
+
+function toggleExercise(day, idx) {
+    const card = document.getElementById('exercise-' + day + '-' + idx);
+    if (card) {
+        card.classList.toggle('expanded');
+    }
+}
+
+function markDayComplete() {
+    const dayKey = workoutData.currentWeek + '-' + workoutData.currentDay;
+    if (workoutData.completedDays[dayKey]) {
+        delete workoutData.completedDays[dayKey];
+    } else {
+        workoutData.completedDays[dayKey] = true;
+    }
+    saveWorkoutData();
+    renderWorkoutProgress();
+    renderWorkoutDayTabs();
+    renderWorkoutDayContent();
+    showToast(workoutData.completedDays[dayKey] ? 'Day marked as complete!' : 'Day marked as incomplete');
+}
+
+function saveWorkoutData() {
+    localStorage.setItem('medtrackr-workoutData', JSON.stringify(workoutData));
+}
+
+function resetWorkoutPlan() {
+    workoutData = {
+        currentWeek: 1,
+        currentDay: 0,
+        totalWeeks: 0,
+        completedDays: {}
+    };
+    localStorage.removeItem('medtrackr-workoutData');
+    updateWorkoutPage();
+    showToast('Workout plan has been reset');
+}
+
 // ==================== TOAST ====================
 function showToast(message) {
     const toast = document.getElementById('toast');
@@ -812,7 +1567,7 @@ document.addEventListener('click', function(e) {
 
 // ==================== SMOOTH SCROLL REVEAL ====================
 function initScrollReveal() {
-    const revealElements = document.querySelectorAll('.feature-card, .stat-item, .dash-card, .macro-card, .goal-card, .daily-card, .macro-plan-card');
+    const revealElements = document.querySelectorAll('.feature-card, .stat-item, .dash-card, .macro-card, .goal-card, .daily-card, .macro-plan-card, .workout-exercise-card');
     const observer = new IntersectionObserver(function(entries) {
         entries.forEach(function(entry, index) {
             if (entry.isIntersecting) {

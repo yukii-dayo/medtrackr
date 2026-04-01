@@ -66,6 +66,7 @@
                 <li><a href="#" class="nav-link" data-page="bmi" onclick="showPage('bmi')"><i class="fas fa-calculator"></i> BMI Calculator</a></li>
                 <li><a href="#" class="nav-link" data-page="dashboard" onclick="showPage('dashboard')"><i class="fas fa-chart-line"></i> Dashboard</a></li>
                 <li><a href="#" class="nav-link" data-page="diet" onclick="showPage('diet')"><i class="fas fa-utensils"></i> Diet Program</a></li>
+                <li><a href="#" class="nav-link" data-page="workout" onclick="showPage('workout')"><i class="fas fa-dumbbell"></i> Workout Plan</a></li>
             </ul>
             <button class="nav-hamburger" id="hamburger">
                 <span></span><span></span><span></span>
@@ -79,6 +80,7 @@
         <a href="#" class="mobile-link" onclick="showPage('bmi'); closeMobileMenu()"><i class="fas fa-calculator"></i> BMI Calculator</a>
         <a href="#" class="mobile-link" onclick="showPage('dashboard'); closeMobileMenu()"><i class="fas fa-chart-line"></i> Dashboard</a>
         <a href="#" class="mobile-link" onclick="showPage('diet'); closeMobileMenu()"><i class="fas fa-utensils"></i> Diet Program</a>
+        <a href="#" class="mobile-link" onclick="showPage('workout'); closeMobileMenu()"><i class="fas fa-dumbbell"></i> Workout Plan</a>
     </div>
 
     <!-- ==================== HOME PAGE ==================== -->
@@ -88,11 +90,7 @@
             <!-- Animated gradient mesh behind hero -->
             <div class="hero-mesh"></div>
             <div class="hero-content">
-                <div class="hero-badge animate-in">
-                    <span class="badge-dot"></span>
-                    <span>Trusted by 15,000+ users</span>
-                </div>
-                <h1 class="hero-title animate-in delay-1">
+                <h1 class="hero-title animate-in">
                     Your Health,<br>
                     <span class="gradient-text">Perfectly Tracked</span>
                 </h1>
@@ -159,30 +157,6 @@
                     <h3>Dark Mode</h3>
                     <p>Easy on your eyes with a beautiful dark mode toggle and smooth transitions.</p>
                 </div>
-            </div>
-        </div>
-
-        <!-- Stats Section -->
-        <div class="stats-section">
-            <div class="stat-item" data-animate>
-                <div class="stat-icon"><i class="fas fa-users"></i></div>
-                <div class="stat-number" data-count="15000">0</div>
-                <div class="stat-label">Users Tracking</div>
-            </div>
-            <div class="stat-item" data-animate>
-                <div class="stat-icon"><i class="fas fa-calculator"></i></div>
-                <div class="stat-number" data-count="50000">0</div>
-                <div class="stat-label">BMI Calculated</div>
-            </div>
-            <div class="stat-item" data-animate>
-                <div class="stat-icon"><i class="fas fa-clipboard-list"></i></div>
-                <div class="stat-number" data-count="8500">0</div>
-                <div class="stat-label">Diet Plans Created</div>
-            </div>
-            <div class="stat-item" data-animate>
-                <div class="stat-icon"><i class="fas fa-star"></i></div>
-                <div class="stat-number" data-count="95">0</div>
-                <div class="stat-label">% Satisfaction</div>
             </div>
         </div>
     </section>
@@ -669,6 +643,76 @@
         </div>
     </section>
 
+    <!-- ==================== WORKOUT PLAN PAGE ==================== -->
+    <section class="page" id="page-workout">
+        <div class="page-container">
+            <div class="page-header animate-in">
+                <h1 class="page-title">Workout <span class="gradient-text">Plan</span></h1>
+                <p class="page-description">Your personalized gym workout program with daily tracking and progress monitoring.</p>
+            </div>
+
+            <!-- No Diet Plan State -->
+            <div class="no-data" id="noWorkoutData">
+                <div class="no-data-icon animate-in">
+                    <i class="fas fa-dumbbell"></i>
+                </div>
+                <h2 class="animate-in delay-1">Create a Diet Plan First</h2>
+                <p class="animate-in delay-2">We need your diet plan to generate a matching workout program.</p>
+                <button class="btn btn-primary btn-glow animate-in delay-3" onclick="showPage('diet')">
+                    <i class="fas fa-utensils"></i> Create Diet Plan
+                </button>
+            </div>
+
+            <!-- Workout Content -->
+            <div class="workout-content" id="workoutContent" style="display: none;">
+                <!-- Workout Progress Overview -->
+                <div class="workout-progress-overview animate-in">
+                    <div class="workout-progress-header">
+                        <h2><i class="fas fa-chart-line"></i> Your Progress</h2>
+                        <div class="workout-progress-stats">
+                            <span class="progress-stat"><i class="fas fa-calendar-check"></i> Day <span id="workoutCurrentDay">1</span> of <span id="workoutTotalDays">90</span></span>
+                            <span class="progress-stat"><i class="fas fa-fire"></i> <span id="workoutCompletedDays">0</span> days completed</span>
+                        </div>
+                    </div>
+                    <div class="workout-progress-bar-container">
+                        <div class="workout-progress-bar">
+                            <div class="workout-progress-fill" id="workoutProgressFill" style="width: 0%"></div>
+                        </div>
+                        <span class="workout-progress-percent" id="workoutProgressPercent">0%</span>
+                    </div>
+                </div>
+
+                <!-- Week Navigation -->
+                <div class="workout-week-nav animate-in delay-1">
+                    <button class="btn btn-outline btn-sm" id="prevWeekBtn" onclick="changeWorkoutWeek(-1)">
+                        <i class="fas fa-chevron-left"></i> Previous Week
+                    </button>
+                    <h2 class="workout-week-title" id="workoutWeekTitle">Week 1</h2>
+                    <button class="btn btn-outline btn-sm" id="nextWeekBtn" onclick="changeWorkoutWeek(1)">
+                        Next Week <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+
+                <!-- Weekly Day Tabs -->
+                <div class="workout-day-tabs animate-in delay-2" id="workoutDayTabs">
+                    <!-- Generated by JS -->
+                </div>
+
+                <!-- Daily Workout Content -->
+                <div class="workout-day-content animate-in delay-3" id="workoutDayContent">
+                    <!-- Generated by JS -->
+                </div>
+
+                <!-- Reset Button -->
+                <div class="workout-reset-section animate-in delay-3">
+                    <button class="btn btn-outline btn-sm" onclick="resetWorkoutPlan()">
+                        <i class="fas fa-redo"></i> Reset Workout Plan
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- Footer -->
     <footer class="footer">
         <div class="footer-wave">
@@ -703,6 +747,7 @@
                 <a href="#" onclick="showPage('bmi')">BMI Calculator</a>
                 <a href="#" onclick="showPage('dashboard')">Dashboard</a>
                 <a href="#" onclick="showPage('diet')">Diet Program</a>
+                <a href="#" onclick="showPage('workout')">Workout Plan</a>
             </div>
             <p class="footer-copy">&copy; 2026 MedTrackr. All rights reserved.</p>
         </div>
