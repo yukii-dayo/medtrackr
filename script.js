@@ -12,6 +12,95 @@ let userData = {
     bmr: 0
 };
 
+// ==================== AUTHENTICATION ====================
+function showAuthForm(form) {
+    const loginForm = document.getElementById('loginForm');
+    const registerForm = document.getElementById('registerForm');
+    const loginTab = document.getElementById('loginTab');
+    const registerTab = document.getElementById('registerTab');
+    
+    if (form === 'login') {
+        loginForm.style.display = 'flex';
+        registerForm.style.display = 'none';
+        loginTab.classList.add('active');
+        registerTab.classList.remove('active');
+    } else {
+        loginForm.style.display = 'none';
+        registerForm.style.display = 'flex';
+        loginTab.classList.remove('active');
+        registerTab.classList.add('active');
+    }
+}
+
+function handleLogin(e) {
+    e.preventDefault();
+    const email = document.getElementById('loginEmail').value;
+    const password = document.getElementById('loginPassword').value;
+    const remember = document.getElementById('rememberMe').checked;
+    
+    if (email && password.length >= 6) {
+        const user = { email: email, name: email.split('@')[0] };
+        localStorage.setItem('medtrackr-user', JSON.stringify(user));
+        if (remember) {
+            localStorage.setItem('medtrackr-remember', 'true');
+        }
+        closeAuth();
+        showToast('Welcome back, ' + user.name + '!');
+    } else {
+        showToast('Invalid credentials');
+    }
+}
+
+function handleRegister(e) {
+    e.preventDefault();
+    const name = document.getElementById('registerName').value;
+    const email = document.getElementById('registerEmail').value;
+    const password = document.getElementById('registerPassword').value;
+    const confirm = document.getElementById('registerConfirm').value;
+    const terms = document.getElementById('acceptTerms').checked;
+    
+    if (!name || !email || !password) {
+        showToast('Please fill in all fields');
+        return;
+    }
+    if (password !== confirm) {
+        showToast('Passwords do not match');
+        return;
+    }
+    if (password.length < 6) {
+        showToast('Password must be at least 6 characters');
+        return;
+    }
+    if (!terms) {
+        showToast('Please accept the terms');
+        return;
+    }
+    
+    const user = { email: email, name: name };
+    localStorage.setItem('medtrackr-user', JSON.stringify(user));
+    closeAuth();
+    showToast('Account created! Welcome, ' + name + '!');
+}
+
+function closeAuth() {
+    const overlay = document.getElementById('authOverlay');
+    if (overlay) {
+        overlay.classList.add('auth-hidden');
+        setTimeout(() => {
+            overlay.style.display = 'none';
+        }, 400);
+    }
+}
+
+// Check if user is already logged in on page load
+(function checkAuth() {
+    const savedUser = localStorage.getItem('medtrackr-user');
+    const overlay = document.getElementById('authOverlay');
+    if (savedUser && overlay) {
+        closeAuth();
+    }
+})();
+
 let dietData = {
     goal: '',
     duration: 3,
